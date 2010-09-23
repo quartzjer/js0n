@@ -12,9 +12,9 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
     static void *gostruct[] = 
     {
         [0 ... 255] = &&l_bad,
-        ['\t'] = &&l_ws, [' '] = &&l_ws, ['\r'] = &&l_ws, ['\n'] = &&l_ws,
-        ['"'] = &&l_quot,
-        [':'] = &&l_is,[','] = &&l_more,
+        ['\t'] = &&l_loop, [' '] = &&l_loop, ['\r'] = &&l_loop, ['\n'] = &&l_loop,
+        ['"'] = &&l_qup,
+        [':'] = &&l_loop,[','] = &&l_loop,
 		['['] = &&l_up, [']'] = &&l_down, // tracking [] and {} individually would allow fuller validation but is really messy
 		['{'] = &&l_up, ['}'] = &&l_down,
 		['-'] = &&l_bare, [48 ... 57] = &&l_bare, // 0-9
@@ -23,7 +23,7 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
     static void *gobare[] = 
     {
     	[0 ... 31] = &&l_bad,
-        [32 ... 126] = &&l_char,
+        [32 ... 126] = &&l_loop, // could be more pedantic/validation-checking
         ['\t'] = &&l_unbare, [' '] = &&l_unbare, ['\r'] = &&l_unbare, ['\n'] = &&l_unbare,
         [','] = &&l_unbare, [']'] = &&l_unbare, ['}'] = &&l_unbare,
         [127 ... 255] = &&l_bad
@@ -31,9 +31,9 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
     static void *gostring[] = 
     {
     	[0 ... 31] = &&l_bad, [127] = &&l_bad,
-        [32 ... 126] = &&l_char,
-        ['\\'] = &&l_esc, ['"'] = &&l_quot,
-        [128 ... 255] = &&l_char
+        [32 ... 126] = &&l_loop,
+        ['\\'] = &&l_esc, ['"'] = &&l_qdown,
+        [128 ... 255] = &&l_loop
     };
     static void *goesc[] = 
     {
@@ -54,9 +54,6 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 	l_bad:
 		return 1;
 	
-	l_char:
-		goto l_loop;
-	
 	l_up:
 		PUSH(0);
 		++depth;
@@ -67,20 +64,14 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 		CAP(0);
 		goto l_loop;
 
-	l_ws:
-	l_is:
-	l_more:
+	l_qup:
+		PUSH(1);
+		go=gostring;
 		goto l_loop;
-	
-	l_quot:
-		if(go==gostruct)
-		{
-			PUSH(1);
-			go=gostring;
-		}else{
-			CAP(-1);
-			go=gostruct;
-		}
+
+	l_qdown:
+		CAP(-1);
+		go=gostruct;
 		goto l_loop;
 		
 	l_esc:
