@@ -1,19 +1,22 @@
+// by jeremie miller - 2010
+// public domain, contributions/improvements welcome via github
 
-int js0n(unsigned char *js, unsigned int len, unsigned short **out)
+// opportunity to further optimize would be having different jump tables for higher depths
+#define PUSH(i) if(depth == 1) *out++ = ((cur+i) - js)
+#define CAP(i) if(depth == 1) *out++ = (cur+i) - (js + *(out-1)) + 1
+
+int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 {
-	unsigned char buff[1024], *cur, *end;
-	int mode=0; // 0=structures 1=strings
+	unsigned char *cur, *end;
 	int depth=0;
-	int kind=0; // 0=obj 1=array
-	char quote;
     static void *gostruct[] = 
     {
         [0 ... 255] = &&l_bad,
         ['\t'] = &&l_ws, [' '] = &&l_ws, ['\r'] = &&l_ws, ['\n'] = &&l_ws,
         ['"'] = &&l_quot,
         [':'] = &&l_is,[','] = &&l_more,
-		['['] = &&l_ko, [']'] = &&l_kc,
-		['{'] = &&l_ko, ['}'] = &&l_kc,
+		['['] = &&l_up, [']'] = &&l_down, // tracking [] and {} individually would allow fuller validation but is really messy
+		['{'] = &&l_up, ['}'] = &&l_down,
 		['-'] = &&l_bare, [48 ... 57] = &&l_bare, // 0-9
 		['t'] = &&l_bare, ['f'] = &&l_bare, ['n'] = &&l_bare // true, false, null
     };
@@ -46,31 +49,38 @@ int js0n(unsigned char *js, unsigned int len, unsigned short **out)
 			l_loop:;
 	}
 	
+	return depth; // 0 if successful full parse, >0 for incomplete data
+	
 	l_bad:
-		printf("bad char %d\n",*cur);
 		return 1;
 	
 	l_char:
-		printf("%c",mode?'.':'*');
 		goto l_loop;
 	
-	l_ko:
-		printf("%d%c",++depth,*cur);
+	l_up:
+		PUSH(0);
+		++depth;
 		goto l_loop;
-	l_kc:
-		printf("%d%c",--depth,*cur);
+
+	l_down:
+		--depth;
+		CAP(0);
 		goto l_loop;
 
 	l_ws:
 	l_is:
 	l_more:
-		printf("%c",*cur);
 		goto l_loop;
 	
 	l_quot:
-		printf("%c",*cur);
-		go = mode?gostruct:gostring;
-		mode^=1;
+		if(go==gostruct)
+		{
+			PUSH(1);
+			go=gostring;
+		}else{
+			CAP(-1);
+			go=gostruct;
+		}
 		goto l_loop;
 		
 	l_esc:
@@ -82,10 +92,12 @@ int js0n(unsigned char *js, unsigned int len, unsigned short **out)
 		goto l_loop;
 
 	l_bare:
+		PUSH(0);
 		go = gobare;
 		goto l_loop;
 
 	l_unbare:
+		CAP(-1);
 		go = gostruct;
 		goto *go[*cur];
 		

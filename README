@@ -1,6 +1,6 @@
 js0n - the "cheapest" c json parser possible?
 
-A one-pass super low overhead parsing walk of the raw bytes and no mem copying of any sort, fills in a simple array of offsets and lengths of the first depth array values or object key/values.
+A one-pass super low overhead parsing walk of the raw bytes and no mem copying of any sort, fills in a simple array of offsets and lengths of the first depth array values or object key/values. It should parse any valid json, but trades full validation for efficiency (some invalid json will still parse).  Excellent for low level high speed scanning/routing of small chunks of json.
 
 Parsing this:
 
