@@ -9,38 +9,38 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 {
 	unsigned char *cur, *end;
 	int depth=0;
-    static void *gostruct[] = 
-    {
-        [0 ... 255] = &&l_bad,
-        ['\t'] = &&l_loop, [' '] = &&l_loop, ['\r'] = &&l_loop, ['\n'] = &&l_loop,
-        ['"'] = &&l_qup,
-        [':'] = &&l_loop,[','] = &&l_loop,
+	static void *gostruct[] = 
+	{
+		[0 ... 255] = &&l_bad,
+		['\t'] = &&l_loop, [' '] = &&l_loop, ['\r'] = &&l_loop, ['\n'] = &&l_loop,
+		['"'] = &&l_qup,
+		[':'] = &&l_loop,[','] = &&l_loop,
 		['['] = &&l_up, [']'] = &&l_down, // tracking [] and {} individually would allow fuller validation but is really messy
 		['{'] = &&l_up, ['}'] = &&l_down,
 		['-'] = &&l_bare, [48 ... 57] = &&l_bare, // 0-9
 		['t'] = &&l_bare, ['f'] = &&l_bare, ['n'] = &&l_bare // true, false, null
-    };
-    static void *gobare[] = 
-    {
-    	[0 ... 31] = &&l_bad,
-        [32 ... 126] = &&l_loop, // could be more pedantic/validation-checking
-        ['\t'] = &&l_unbare, [' '] = &&l_unbare, ['\r'] = &&l_unbare, ['\n'] = &&l_unbare,
-        [','] = &&l_unbare, [']'] = &&l_unbare, ['}'] = &&l_unbare,
-        [127 ... 255] = &&l_bad
-    };
-    static void *gostring[] = 
-    {
-    	[0 ... 31] = &&l_bad, [127] = &&l_bad,
-        [32 ... 126] = &&l_loop,
-        ['\\'] = &&l_esc, ['"'] = &&l_qdown,
-        [128 ... 255] = &&l_loop
-    };
-    static void *goesc[] = 
-    {
-        [0 ... 255] = &&l_bad,
-        ['"'] = &&l_unesc, ['\\'] = &&l_unesc, ['/'] = &&l_unesc, ['b'] = &&l_unesc,
+	};
+	static void *gobare[] = 
+	{
+		[0 ... 31] = &&l_bad,
+		[32 ... 126] = &&l_loop, // could be more pedantic/validation-checking
+		['\t'] = &&l_unbare, [' '] = &&l_unbare, ['\r'] = &&l_unbare, ['\n'] = &&l_unbare,
+		[','] = &&l_unbare, [']'] = &&l_unbare, ['}'] = &&l_unbare,
+		[127 ... 255] = &&l_bad
+	};
+	static void *gostring[] = 
+	{
+		[0 ... 31] = &&l_bad, [127] = &&l_bad,
+		[32 ... 126] = &&l_loop,
+		['\\'] = &&l_esc, ['"'] = &&l_qdown,
+		[128 ... 255] = &&l_loop
+	};
+	static void *goesc[] = 
+	{
+		[0 ... 255] = &&l_bad,
+		['"'] = &&l_unesc, ['\\'] = &&l_unesc, ['/'] = &&l_unesc, ['b'] = &&l_unesc,
 		['f'] = &&l_unesc, ['n'] = &&l_unesc, ['r'] = &&l_unesc, ['t'] = &&l_unesc, ['u'] = &&l_unesc
-    };
+	};
 	static void **go = gostruct;
 	
 	for(cur=js,end=js+len; cur<end; cur++)
