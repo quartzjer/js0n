@@ -9,6 +9,7 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 {
 	unsigned char *cur, *end;
 	int depth=0;
+	int utf8_remain=0;
 	static void *gostruct[] = 
 	{
 		[0 ... 255] = &&l_bad,
@@ -33,7 +34,17 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 		[0 ... 31] = &&l_bad, [127] = &&l_bad,
 		[32 ... 126] = &&l_loop,
 		['\\'] = &&l_esc, ['"'] = &&l_qdown,
-		[128 ... 255] = &&l_loop
+		[128 ... 191] = &&l_bad,
+		[192 ... 223] = &&l_utf8_2,
+		[224 ... 239] = &&l_utf8_3,
+		[240 ... 247] = &&l_utf8_4,
+		[248 ... 255] = &&l_bad
+	};
+	static void *goutf8_continue[] =
+	{
+		[0 ... 127] = &&l_bad,
+		[128 ... 191] = &&l_utf_continue,
+		[192 ... 255] = &&l_bad
 	};
 	static void *goesc[] = 
 	{
@@ -91,6 +102,26 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 		CAP(-1);
 		go = gostruct;
 		goto *go[*cur];
-		
+
+	l_utf8_2:
+		go = goutf8_continue;
+		utf8_remain = 1;
+		goto l_loop;
+
+	l_utf8_3:
+		go = goutf8_continue;
+		utf8_remain = 2;
+		goto l_loop;
+
+	l_utf8_4:
+		go = goutf8_continue;
+		utf8_remain = 3;
+		goto l_loop;
+
+	l_utf_continue:
+		if (!--utf8_remain)
+			go=gostring;
+		goto l_loop;
+
 }
 
