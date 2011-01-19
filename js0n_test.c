@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
 #include "js0n.h"
 
 int main(int argc, char **argv)
 {
-	unsigned char buff[1024], *json;
+	unsigned char buff[1024], *json = NULL;
 	int len, lastlen=0, ret, i;
 	unsigned short *res;
 	FILE *f;
@@ -25,7 +24,7 @@ int main(int argc, char **argv)
 	fclose(f);
 	printf("got[%.*s]\n",lastlen,json);
 	res = malloc(lastlen); // way more than enough
-	bzero(res,lastlen);
+	memset(res,0,lastlen);
 	ret = js0n(json,lastlen,res);
 	printf("returned %d\n",ret);
 	for(i=0;res[i];i+=2)
