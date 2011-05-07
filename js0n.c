@@ -19,7 +19,8 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 		['['] = &&l_up, [']'] = &&l_down, // tracking [] and {} individually would allow fuller validation but is really messy
 		['{'] = &&l_up, ['}'] = &&l_down,
 		['-'] = &&l_bare, [48 ... 57] = &&l_bare, // 0-9
-		['t'] = &&l_bare, ['f'] = &&l_bare, ['n'] = &&l_bare // true, false, null
+		['t'] = &&l_bare, ['f'] = &&l_bare, ['n'] = &&l_bare, // true, false, null
+		['/'] = &&l_cup
 	};
 	static void *gobare[] = 
 	{
@@ -52,6 +53,11 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 		['"'] = &&l_unesc, ['\\'] = &&l_unesc, ['/'] = &&l_unesc, ['b'] = &&l_unesc,
 		['f'] = &&l_unesc, ['n'] = &&l_unesc, ['r'] = &&l_unesc, ['t'] = &&l_unesc, ['u'] = &&l_unesc
 	};
+	static void *gocomment[] =
+	{
+		[0 ... 255] = &&l_drop,
+		['/'] = &&l_cdown
+	};
 	static void **go = gostruct;
 	
 	for(cur=js,end=js+len; cur<end; cur++)
@@ -59,7 +65,8 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 			goto *go[*cur];
 			l_loop:;
 	}
-	
+
+	*out = '\0';
 	return depth; // 0 if successful full parse, >0 for incomplete data
 	
 	l_bad:
@@ -84,7 +91,23 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 		CAP(-1);
 		go=gostruct;
 		goto l_loop;
-		
+
+        l_cup:
+		if ((cur + 1) < end && *(cur + 1) == '*') {
+			++cur;
+			go=gocomment;
+		} else
+			return 1;
+		goto l_loop;
+
+        l_cdown:
+		if (*(cur - 1) == '*')
+			go=gostruct;
+		goto l_loop;
+
+	l_drop:
+		goto l_loop;
+
 	l_esc:
 		go = goesc;
 		goto l_loop;
