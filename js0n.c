@@ -11,49 +11,99 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 	unsigned char *cur, *end;
 	int depth=0;
 	int utf8_remain=0;
-	static void *gostruct[] = 
+	static const void *gostruct[] = 
 	{
-		[0 ... 255] = &&l_bad,
-		['\t'] = &&l_loop, [' '] = &&l_loop, ['\r'] = &&l_loop, ['\n'] = &&l_loop,
-		['"'] = &&l_qup,
-		[':'] = &&l_loop,[','] = &&l_loop,
-		['['] = &&l_up, [']'] = &&l_down, // tracking [] and {} individually would allow fuller validation but is really messy
-		['{'] = &&l_up, ['}'] = &&l_down,
-		['-'] = &&l_bare, [48 ... 57] = &&l_bare, // 0-9
-		['t'] = &&l_bare, ['f'] = &&l_bare, ['n'] = &&l_bare // true, false, null
+        [0 ... 8]       = &&l_bad,
+        [11 ... 12]     = &&l_bad,
+        [14 ... 31]     = &&l_bad,
+        [33]            = &&l_bad,
+        [35 ... 43]     = &&l_bad,
+        [46 ... 47]     = &&l_bad,
+        [59 ... 90]     = &&l_bad,
+        [92]            = &&l_bad,
+        [94 ... 101]    = &&l_bad,
+        [103 ... 109]   = &&l_bad,
+        [111 ... 115]   = &&l_bad,
+        [117 ... 122]   = &&l_bad,
+        [124]           = &&l_bad,
+        [126 ... 255]   = &&l_bad,
+        ['\t']          = &&l_loop, 
+        [' ']           = &&l_loop, 
+        ['\r']          = &&l_loop, 
+        ['\n']          = &&l_loop,
+        ['"']           = &&l_qup,
+        [':']           = &&l_loop,
+        [',']           = &&l_loop,
+        ['[']           = &&l_up, [']'] = &&l_down, // tracking [] and {} individually would allow fuller validation but is really messy
+        ['{']           = &&l_up, ['}'] = &&l_down,
+        ['-']           = &&l_bare, 
+        [48 ... 57]     = &&l_bare, // 0-9
+        ['t']           = &&l_bare, 
+        ['f']           = &&l_bare, 
+        ['n']           = &&l_bare // true, false, null
 	};
-	static void *gobare[] = 
+	static const void *gobare[] = 
 	{
-		[0 ... 31] = &&l_bad,
-		[32 ... 126] = &&l_loop, // could be more pedantic/validation-checking
-		['\t'] = &&l_unbare, [' '] = &&l_unbare, ['\r'] = &&l_unbare, ['\n'] = &&l_unbare,
-		[','] = &&l_unbare, [']'] = &&l_unbare, ['}'] = &&l_unbare,
-		[127 ... 255] = &&l_bad
+        [0 ... 8]       = &&l_bad,
+        [11 ... 12]     = &&l_bad,
+        [14 ... 31]     = &&l_bad,
+        [33]            = &&l_bad,
+        [35 ... 43]     = &&l_bad,
+        [45 ... 92]     = &&l_bad,
+        [94 ... 124]    = &&l_loop, // could be more pedantic/validation-checking
+        [126]           = &&l_loop, // could be more pedantic/validation-checking
+        ['\t']          = &&l_unbare, 
+        [' ']           = &&l_unbare, 
+        ['\r']          = &&l_unbare, 
+        ['\n']          = &&l_unbare,
+        [',']           = &&l_unbare, 
+        [']']           = &&l_unbare, 
+        ['}']           = &&l_unbare,
+        [127 ... 255]   = &&l_bad
 	};
-	static void *gostring[] = 
+	static const void *gostring[] = 
 	{
-		[0 ... 31] = &&l_bad, [127] = &&l_bad,
-		[32 ... 126] = &&l_loop,
-		['\\'] = &&l_esc, ['"'] = &&l_qdown,
-		[128 ... 191] = &&l_bad,
-		[192 ... 223] = &&l_utf8_2,
-		[224 ... 239] = &&l_utf8_3,
-		[240 ... 247] = &&l_utf8_4,
-		[248 ... 255] = &&l_bad
+        [0 ... 31]      = &&l_bad, 
+        [127]           = &&l_bad,
+        [32 ... 33]     = &&l_loop,
+        [35 ... 91]     = &&l_loop,
+        [93 ... 126]    = &&l_loop,
+        ['\\']          = &&l_esc, 
+        ['"']           = &&l_qdown,
+        [128 ... 191]   = &&l_bad,
+        [192 ... 223]   = &&l_utf8_2,
+        [224 ... 239]   = &&l_utf8_3,
+        [240 ... 247]   = &&l_utf8_4,
+        [248 ... 255]   = &&l_bad
 	};
-	static void *goutf8_continue[] =
+	static const void *goutf8_continue[] =
 	{
-		[0 ... 127] = &&l_bad,
-		[128 ... 191] = &&l_utf_continue,
-		[192 ... 255] = &&l_bad
+		[0 ... 127]     = &&l_bad,
+		[128 ... 191]   = &&l_utf_continue,
+		[192 ... 255]   = &&l_bad
 	};
-	static void *goesc[] = 
+	static const void *goesc[] = 
 	{
-		[0 ... 255] = &&l_bad,
-		['"'] = &&l_unesc, ['\\'] = &&l_unesc, ['/'] = &&l_unesc, ['b'] = &&l_unesc,
-		['f'] = &&l_unesc, ['n'] = &&l_unesc, ['r'] = &&l_unesc, ['t'] = &&l_unesc, ['u'] = &&l_unesc
+        [0 ... 33]      = &&l_bad,
+        [35 ... 46]     = &&l_bad,
+        [48 ... 91]     = &&l_bad,
+        [93 ... 97]     = &&l_bad,
+        [99 ... 101]    = &&l_bad,
+        [103 ... 109]   = &&l_bad,
+        [111 ... 113]   = &&l_bad,
+        [115]           = &&l_bad,
+        [118 ... 225]   = &&l_bad,
+        ['"']           = &&l_unesc, 
+        ['\\']          = &&l_unesc, 
+        ['/']           = &&l_unesc, 
+        ['b']           = &&l_unesc,
+        ['f']           = &&l_unesc, 
+        ['n']           = &&l_unesc, 
+        ['r']           = &&l_unesc, 
+        ['t']           = &&l_unesc, 
+        ['u']           = &&l_unesc
 	};
-	static void **go = gostruct;
+	static const void **go = gostruct;
 	
 	for(cur=js,end=js+len; cur<end; cur++)
 	{
@@ -125,4 +175,3 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 		goto l_loop;
 
 }
-
