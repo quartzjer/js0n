@@ -5,9 +5,9 @@
 #define PUSH(i) if(depth == 1) prev = *out++ = ((cur+i) - js)
 #define CAP(i) if(depth == 1) prev = *out++ = ((cur+i) - (js + prev) + 1)
 
-int js0n(unsigned char *js, unsigned int len, unsigned short *out)
+int js0n(unsigned char *js, unsigned int len, unsigned short *out, unsigned int olen)
 {
-	unsigned short prev = 0;
+	unsigned short prev = 0, *oend;
 	unsigned char *cur, *end;
 	int depth=0;
 	int utf8_remain=0;
@@ -55,12 +55,13 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out)
 	};
 	static void **go = gostruct;
 	
-	for(cur=js,end=js+len; cur<end; cur++)
+	for(cur=js,end=js+len,oend=out+olen; cur<end && out<oend; cur++)
 	{
 			goto *go[*cur];
 			l_loop:;
 	}
 	
+  if(out < oend) *out = 0;
 	return depth; // 0 if successful full parse, >0 for incomplete data
 	
 	l_bad:

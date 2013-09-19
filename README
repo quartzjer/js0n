@@ -8,5 +8,6 @@ Parsing this:
 
 Would result in:
 
-2,3,8,3,14,6,22,7,30,3,35,9
+2,3,8,3,14,6,22,7,30,3,35,9,0
 
+Also includes a collection utility functions for handy ways of using js0n quickly/easily.

@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "js0n.h"
+#include "../js0n.h"
+#include "../j0g.h"
 
 int main(int argc, char **argv)
 {
@@ -24,13 +25,18 @@ int main(int argc, char **argv)
 	fclose(f);
 	printf("got[%.*s]\n",lastlen,json);
 	res = malloc(lastlen); // way more than enough
-	memset(res,0,lastlen);
-	ret = js0n(json,lastlen,res);
+	ret = js0n(json,lastlen,res,lastlen);
 	printf("returned %d\n",ret);
 	for(i=0;res[i];i+=2)
 	{
 		printf("%d: at %d len %d is %.*s\n",i,res[i],res[i+1],res[i+1],json+res[i]);
 	}
+	
+	// j0g tests
+  printf("j0g_val 'key' val offset %d\n", j0g_val("key",(char*)json,res));
+  printf("j0g_str 'key' val '%s'\n", j0g_str("key",(char*)json,res));
+  printf("j0g_str 'num' val '%0.2f'\n", (j0g_str("num",(char*)json,res)!=NULL)?strtof(j0g_str("num",(char*)json,res), NULL):0);
+  printf("j0g_test obj->true %d\n", j0g_test("true",j0g(j0g_str("obj",(char*)json,res),res,16),res));
 	return 0;
 }
 
