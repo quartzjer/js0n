@@ -1,5 +1,9 @@
 // by jeremie miller - 2010
-// public domain, contributions/improvements welcome via github
+// public domain, contributions/improvements welcome via github at https://github.com/quartzjer/js0n
+
+// gcc started warning for the init syntax used here, is not helpful so don't generate the spam
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winitializer-overrides"
 
 // opportunity to further optimize would be having different jump tables for higher depths
 #define PUSH(i) if(depth == 1) prev = *out++ = ((cur+i) - js)
@@ -127,3 +131,4 @@ int js0n(unsigned char *js, unsigned int len, unsigned short *out, unsigned int 
 
 }
 
+#pragma GCC diagnostic pop
