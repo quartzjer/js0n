@@ -18,9 +18,15 @@ char *j0g(char *json, unsigned short *index, int ilen)
 // return the null-terminated string value matching the given key
 char *j0g_str(char *key, char *json, unsigned short *index)
 {
-  char *str, *cursor;
   int val = j0g_val(key, json, index);
   if(!val) return NULL;
+  return j0g_safe(val, json, index);
+}
+
+// null terminate and unescape any string at this value
+char *j0g_safe(int val, char *json, unsigned short *index)
+{
+  char *str, *cursor;
   *(json+(index[val]+index[val+1])) = 0; // null terminate
   // unescape stuff
   for(cursor=str=json+index[val]; *cursor; cursor++,str++)

@@ -18,3 +18,6 @@ int j0g_test(char *key, char *json, unsigned short *index);
 
 // return the index offset of the value matching the given key
 int j0g_val(char *key, char *json, unsigned short *index);
+
+// unescapes and null terminates any value (useful for arrays)
+char *j0g_safe(int val, char *json, unsigned short *index);
