@@ -5,7 +5,7 @@
 #include "j0g.h"
 
 // dumbed down parser, expects null terminated json, if fails the *index is 0 (and safe to pass into j0g_*)
-char *j0g(char *json, unsigned short *index, int ilen)
+char *j0g(const char *json, unsigned short *index, int ilen)
 {
   int ret, len;
   if(!json) return NULL;

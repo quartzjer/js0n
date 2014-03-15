@@ -2,7 +2,7 @@
 
 // dumbed down parser, expects null terminated json, if fails the *index is 0 (and safe to pass into j0g_*)
 // returns json, for chaining
-char *j0g(char *json, unsigned short *index, int ilen);
+char *j0g(const char *json, unsigned short *index, int ilen);
 
 // for the rest -
 // first arg is the key to find in the json
