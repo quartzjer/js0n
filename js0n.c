@@ -9,7 +9,7 @@
 #define PUSH(i) if(depth == 1) prev = *out++ = ((cur+i) - js)
 #define CAP(i) if(depth == 1) prev = *out++ = ((cur+i) - (js + prev) + 1)
 
-int js0n(unsigned char *js, unsigned int len, unsigned short *out, unsigned int olen)
+int js0n(const unsigned char *js, unsigned int len, unsigned short *out, unsigned int olen)
 {
 	unsigned short prev = 0, *oend;
 	unsigned char *cur, *end;
