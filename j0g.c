@@ -16,7 +16,7 @@ char *j0g(const char *json, unsigned short *index, int ilen)
 }
 
 // return the null-terminated string value matching the given key
-char *j0g_str(char *key, char *json, unsigned short *index)
+char *j0g_str(const char *key, char *json, const unsigned short *index)
 {
   int val = j0g_val(key, json, index);
   if(!val) return NULL;
@@ -24,7 +24,7 @@ char *j0g_str(char *key, char *json, unsigned short *index)
 }
 
 // null terminate and unescape any string at this value
-char *j0g_safe(int val, char *json, unsigned short *index)
+char *j0g_safe(int val, char *json, const unsigned short *index)
 {
   char *str, *cursor;
   *(json+(index[val]+index[val+1])) = 0; // null terminate
@@ -47,7 +47,7 @@ char *j0g_safe(int val, char *json, unsigned short *index)
 }
 
 // return 1 if the value is the bool value true, number 1, or even the string "true", false otherwise
-int j0g_test(char *key, char *json, unsigned short *index)
+int j0g_test(const char *key, char *json, const unsigned short *index)
 {
   char *val = j0g_str(key, json, index);
   if(!val) return 0;
@@ -57,7 +57,7 @@ int j0g_test(char *key, char *json, unsigned short *index)
 }
 
 // return the index offset of the value matching the given key
-int j0g_val(char *key, char *json, unsigned short *index)
+int j0g_val(const char *key, char *json, const unsigned short *index)
 {
   if(!key || !json) return 0;
   int i, klen = strlen(key);
