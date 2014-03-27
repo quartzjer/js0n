@@ -57,7 +57,7 @@ int js0n(const unsigned char *js, unsigned int len, unsigned short *out, unsigne
 		['"'] = &&l_unesc, ['\\'] = &&l_unesc, ['/'] = &&l_unesc, ['b'] = &&l_unesc,
 		['f'] = &&l_unesc, ['n'] = &&l_unesc, ['r'] = &&l_unesc, ['t'] = &&l_unesc, ['u'] = &&l_unesc
 	};
-	static void **go = gostruct;
+	void **go = gostruct;
 	
 	for(cur=js,end=js+len,oend=out+olen; cur<end && out<oend; cur++)
 	{
