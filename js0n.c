@@ -12,7 +12,7 @@
 int js0n(const unsigned char *js, unsigned int len, unsigned short *out, unsigned int olen)
 {
 	unsigned short prev = 0, *oend;
-	unsigned char *cur, *end;
+	const unsigned char *cur, *end;
 	int depth=0;
 	int utf8_remain=0;
 	static void *gostruct[] = 

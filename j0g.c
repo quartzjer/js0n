@@ -12,7 +12,7 @@ char *j0g(const char *json, unsigned short *index, int ilen)
   len = strlen(json);
   ret = js0n((unsigned char*)json, len, index, ilen);
   if(ret) *index = 0;
-  return json;
+  return (char*)json;
 }
 
 // return the null-terminated string value matching the given key
