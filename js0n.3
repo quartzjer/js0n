@@ -1,0 +1,77 @@
+.\"
+.\" Copyright (c) 2014 Jeremie Miller <jeremie@jabber.org>
+.\"
+.\"
+.\"  This software is in the public domain.
+.\"
+.\"
+.Dd $Mdocdate: August 1, 2014  $
+.Dt JS0N 3
+.Os
+.Sh NAME
+.Nm js0n
+.Nd json parsing library
+.Sh SYNOPSIS
+.Fd "#include <js0n.h>"
+.Pp
+.Ft int
+.Fn js0n "const unsigned char *js" "unsigned int len" "unsigned short *out" "unsigned int olen"
+
+.Sh DESCRIPTION
+The
+.Nm js0n
+function parses a JSON string and
+is designed to be simple, lightweight and fast.
+Unlike most JSON parsers,
+.Nm js0n
+hardly allocates any memory.
+Rather, it walks the string and
+records the sequence of (offset, length) integer pairs
+that describe the location of the first-level keys and values.
+.Pp
+It should parse any valid json, but trades full
+validation for efficiency (some invalid json will still parse).
+.Pp
+Excellent for low level high speed scanning/routing of small chunks
+of json.
+.Sh RETURN VALUE
+.Nm js0n
+returns 0 on success.
+If the data was incomplete (for example, missing a close brace)
+or invalid (for example, a string value containing a character
+with an ASCII code less than 32),
+then a number greater than zero is returned.
+
+.Sh EXAMPLE
+The following code fragment illustrates the simple case:
+.Bd -literal -offset indent
+char *s = "{\\"foo\\":\\"bar\\",\\"barbar\\":[1,2,3],\\"obj\\":{\\"a\\":\\"b\\"}}";
+// 3 keys, 3 values, each with a start and offset = 12
+// Plus one for a terminating zero = 13.
+unsigned short kvpairs[13];
+
+\&...
+
+int rc = js0n((unsigned char*) s, strlen(s), kvpairs, 13);
+if (!rc)
+    for (int i = 0; kvpairs[i]; i += 2)
+        printf("%d: at %d len %d is %.*s\n", i,
+            kvpairs[i], kvpairs[i + 1], kvpairs[i + 1], s + kvpairs[i]);
+else
+	errx("Parse failed.");
+
+.Ed
+
+produces this output:
+
+.Bd -literal -offset indent0: at 2 len 3 is foo
+2: at 8 len 3 is bar
+4: at 14 len 6 is barbar
+6: at 22 len 7 is [1,2,3]
+8: at 31 len 3 is obj
+10: at 36 len 9 is {"a":"b"}
+.Ed
+
+.Sh SEE ALSO
+.Xr j0g 3
+
