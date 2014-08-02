@@ -1,0 +1,128 @@
+.\"
+.\" Copyright (c) 2014 Jeremie Miller <jeremie@jabber.org>
+.\"
+.\"
+.\"  This software is provided 'as-is', without any express or implied
+.\"  warranty.  In no event will the authors be held liable for any damages
+.\"  arising from the use of this software.
+.\"
+.\"  Permission is granted to anyone to use this software for any purpose,
+.\"  including commercial applications, and to alter it and redistribute it
+.\"  freely, subject to the following restrictions:
+.\"
+.\"  The origin of this software must not be misrepresented; you must not
+.\"  claim that you wrote the original software. If you use this software
+.\"  in a product, an acknowledgment in the product documentation would be
+.\"  appreciated but is not required.
+.\"  Altered source versions must be plainly marked as such, and must not be
+.\"  misrepresented as being the original software.
+.\"  This notice may not be removed or altered from any source distribution.
+.\"
+.\"
+.Dd $Mdocdate: August 1, 2014  $
+.Dt J0G 3
+.Os
+.Sh NAME
+.Nm j0g ,
+.Nm j0g_str ,
+.Nm j0g_safe ,
+.Nm j0g_test ,
+.Nm j0g_val ,
+.Nm j0g_val
+.Nd utility functions for js0n parsing libary.
+.Sh SYNOPSIS
+.Fd "#include <js0n.h>"
+.Fd "#include <j0g.h>"
+.Pp
+.Ft char *
+.Fn j0g "const char *json" "unsigned short *index" "int ilen"
+.Pp
+.Ft int
+.Fn j0g_val "const char *key" "char *json" "const unsigned short *index"
+.Pp
+.Ft char *
+.Fn j0g_safe "int val" "char *json" "const unsigned short *index"
+.Pp
+.Ft char *
+.Fn j0g_str "const char *key" "char *json" "const unsigned short *index"
+.Pp
+.Ft int
+.Fn j0g_test "const char *key" "char *json" "const unsigned short *index"
+
+.Sh DESCRIPTION
+Convenience functions that make it easier to work with
+.Nm js0n .
+All but
+.Fn j0g
+operate on a particular key in the json string.
+
+.Bl -tag -width Ds
+
+.It Xo
+.Fa char *
+.Fn j0g "const char *json" "unsigned short *index" "int ilen"
+.Xc
+.Pp
+A simpler version of
+.Fn js0n
+that assumes the
+.Fa json
+argument is a null-terminated string.
+
+
+.It Xo
+.Fa int
+.Fn j0g_val "const char *key" "char *json" "const unsigned short *index" ;
+.Xc
+.Pp
+For the given key, return the array element
+that holds the starting position of the key's value.  For example, if
+index[2] holds the offset from the beginning of the json string
+to the beginning of the
+.Fa key ,
+then
+.Fn j0g_val
+would return a 4 (index[3] holds the length of the key).
+.Pp
+If the key is not found (or if the key or the json is a null pointer), return 0.
+
+.It Xo
+.Fa char *
+.Fn j0g_safe "int val" "char *json" "const unsigned short *index" ;
+.Xc
+.Pp
+Modifies
+.Fa json 
+passed in, null-terminating the value (or 
+key) whose offset is stored in the 
+.Fa index
+array array location
+.Fa val .
+Also, unescapes newlines and double quotes in-place in
+.Fa json.
+Returns the null-terminated and unescaped string value.
+.Pp
+Note that this function does not unescape all escaped characters
+in the JSON specification; only
+newlines and double-quotes.
+
+.It Xo
+.Fa char *
+.Fn j0g_str "const char *key" "char *json" "const unsigned short *index" ;
+.Xc
+.Pp
+Return the null-terminated and (partially) unescaped string value 
+matching the given key.
+If no such key, return NULL.
+
+.It Xo
+.Fa int
+.Fn j0g_test "const char *key" "char *json" "const unsigned short *index" ;
+.Xc
+.Pp
+Return 1 if the value is ``true'' or ``1'', false otherwise
+.El
+
+.Sh SEE ALSO
+.Xr js0n 3
+

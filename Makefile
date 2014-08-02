@@ -12,7 +12,7 @@ clean:
 	rm -f example js0n_test
 
 
-man: ${MANDIR}/js0n.3
+man: ${MANDIR}/js0n.3 ${MANDIR}/j0g.3
 
-${MANDIR}/js0n.3: js0n.3
+${MANDIR}/%.3: %.3
 	sudo cp $? $@
