@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../js0n.h"
-#include "../j0g.h"
+#include "../src/js0n.h"
 
 void
 ex1()
