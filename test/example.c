@@ -5,22 +5,18 @@
 
 void ex1(void)
 {
+	unsigned int arg = 0;
+
 	char *json = "{\"foo\":\"bar\",\"barbar\":[1,2,3],\"obj\":{\"a\":\"b\"}}";
-
 	printf("parsing '%s'\n", json);
-
-	char *val = js0n("barbar", json, strlen(json), 0);
-
-	printf("returned %s\n",val);
+	char *val = js0n("barbar", &arg, json, strlen(json));
+	printf("returned %.*s\n",arg,val);
 
 	char *array = "[\"foo\",\"bar\",[1,2,3],{\"a\":\"b\"},42]";
-
 	printf("parsing '%s'\n", array);
-
-	unsigned int arg = 3;
-	char *val2 = js0n(0, array, strlen(array), &arg);
-
-	printf("returned %.*s\n",arg,val2);
+	arg = 3;
+	val = js0n(0, &arg, array, strlen(array));
+	printf("returned %.*s\n",arg,val);
 
 }
 

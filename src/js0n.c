@@ -1,6 +1,8 @@
 // by jeremie miller - 2014
 // public domain, contributions/improvements welcome via github at https://github.com/quartzjer/js0n
 
+#include <string.h> // one strncmp() is used to do key comparison, and a strlen(key) if no len passed in
+
 // gcc started warning for the init syntax used here, is not helpful so don't generate the spam, supressing the warning is really inconsistently supported across versions
 #if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
 #pragma GCC diagnostic push
@@ -10,16 +12,19 @@
 #pragma GCC diagnostic ignored "-Winitializer-overrides"
 #pragma GCC diagnostic ignored "-Woverride-init"
 
-// opportunity to further optimize would be having different short-cut jump tables for higher depths
-#define PUSH(i) if(depth == 1) {printf("push %d %s\n",index,cur); if(!key && !index) val = cur; else index--;}
-#define CAP(i) if(depth == 1) {printf("cap %d %s\n",index,cur); if(!key && val && !index) {*arg = (cur - val)+1; return val;}}
+// only at depth 1, track start pointers to match key/value
+#define PUSH(i) if(depth == 1) { if(!index) { val = cur+i; }else{ if(klen && index == 1) start = cur+1; else index--; } }
+
+// determine if key matches or value is complete
+#define CAP(i) if(depth == 1) { if(val && !index) {*len = (cur - val)+1; return val;}; if(klen) index = (start && klen == (cur-start) && strncmp(key,start,klen)==0) ? 0 : 1;}
 
 // this makes a single pass across the json bytes, using each byte as an index into a jump table to build an index and transition state
-char *js0n(char *key, char *json, unsigned int len, unsigned int *arg)
+char *js0n(char *key, unsigned int *len, char *json, unsigned int jlen)
 {
 	char *val = 0;
 	char *cur, *end, *start;
-	unsigned int index=0; // for parsing arrays
+	unsigned int klen = 0;
+	unsigned int index = 1;
 	int depth=0;
 	int utf8_remain=0;
 	static void *gostruct[] = 
@@ -67,24 +72,25 @@ char *js0n(char *key, char *json, unsigned int len, unsigned int *arg)
 	};
 	void **go = gostruct;
 	
-	if(!json || !len) return 0;
+	if(!json || !jlen || !len) return 0;
 	
-	// no key is array mode, vlen provides requested index
+	// no key is array mode, len provides requested index
 	if(!key)
 	{
-		if(!arg) return 0;
-		index = *arg;
+		index = *len;
+	}else{
+		klen = *len;
+		if(!klen) klen = strlen(key); // convenience
 	}
+	*len = 0;
 
-	for(start=cur=json,end=cur+len; cur<end; cur++)
+	for(start=cur=json,end=cur+jlen; cur<end; cur++)
 	{
 			goto *go[(unsigned char)*cur];
 			l_loop:;
 	}
 	
-printf("return %d %s\n",cur-val,val);
-	if(arg && val) *arg = cur - val; // return length if requested
-	return val;
+	return 0;
 	
 	l_bad:
 		return 0;
