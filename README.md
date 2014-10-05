@@ -3,11 +3,11 @@
 A one-pass minimal overhead walk of the raw bytes, using each one as an index into a jump table to determine state transitions.
 
 * public domain, single js0n.c file with one function
+* no dependencies, embedded friendly
 * more flexible than strict JSON and allows bare keys
-* requires no memory/malloc, uses only what is passed in
-* no memory copying
+* requires no memory/malloc or copying, uses only what is passed in
 * optimized for high speed scanning/routing of small chunks of json
-* finds a given key-value pair location in the string
+* easy to use, just returns a given key-value pair location in the json string
 
 Parsing this:
 
@@ -15,7 +15,7 @@ Parsing this:
 {"foo":"bar","barbar":[1,2,3],"obj":{"a":"b"}}
 ````
 
-Using `at = js0n("barbr", json, len, &vlen)` would return an at pointing to `[1,2,3]` and set vlen to `7`.
+Using `at = js0n("barbar", &len, json, strlen(json))` would return an at pointing to `[1,2,3]` and set len to `7`.
 
 
 ## History
