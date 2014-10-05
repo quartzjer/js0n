@@ -19,12 +19,12 @@
 #define CAP(i) if(depth == 1) { if(val && !index) {*len = (cur - val)+1; return val;}; if(klen) index = (start && klen == (cur-start) && strncmp(key,start,klen)==0) ? 0 : 1;}
 
 // this makes a single pass across the json bytes, using each byte as an index into a jump table to build an index and transition state
-char *js0n(char *key, unsigned int *len, char *json, unsigned int jlen)
+char *js0n(char *key, int *len, char *json, int jlen)
 {
 	char *val = 0;
 	char *cur, *end, *start;
-	unsigned int klen = 0;
-	unsigned int index = 1;
+	int klen = 0;
+	int index = 1;
 	int depth=0;
 	int utf8_remain=0;
 	static void *gostruct[] = 
@@ -72,7 +72,7 @@ char *js0n(char *key, unsigned int *len, char *json, unsigned int jlen)
 	};
 	void **go = gostruct;
 	
-	if(!json || !jlen || !len) return 0;
+	if(!json || jlen <= 0 || !len) return 0;
 	
 	// no key is array mode, len provides requested index
 	if(!key)
@@ -80,7 +80,7 @@ char *js0n(char *key, unsigned int *len, char *json, unsigned int jlen)
 		index = *len;
 	}else{
 		klen = *len;
-		if(!klen) klen = strlen(key); // convenience
+		if(klen <= 0) klen = strlen(key); // convenience
 	}
 	*len = 0;
 

@@ -5,7 +5,7 @@
 
 void ex1(void)
 {
-	unsigned int arg = 0;
+	int arg = 0;
 
 	char *json = "{\"foo\":\"bar\",\"barbar\":[1,2,3],\"obj\":{\"a\":\"b\"}}";
 	printf("parsing '%s'\n", json);
