@@ -7,10 +7,10 @@ test.c: test/test.c src/js0n.c
 test: test.c
 	@if ./test/test ; then \
 		rm -f ./test/test; \
-		echo "PASSED"; \
+		echo "TESTS PASSED"; \
 	else \
 		rm -f ./test/test; \
-		echo "FAILED"; exit 1; \
+		echo "TESTS FAILED"; exit 1; \
 	fi; \
 
 example: test/example.c src/js0n.c

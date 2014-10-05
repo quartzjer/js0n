@@ -16,17 +16,16 @@
 #define PUSH(i) if(depth == 1) { if(!index) { val = cur+i; }else{ if(klen && index == 1) start = cur+i; else index--; } }
 
 // determine if key matches or value is complete
-#define CAP(i) if(depth == 1) { if(val && !index) {*len = (cur+i+1) - val; return val;}; if(klen) index = (start && klen == (cur-start) && strncmp(key,start,klen)==0) ? 0 : 1;}
+#define CAP(i) if(depth == 1) { if(val && !index) {*vlen = (cur+i+1) - val; return val;}; if(klen) index = (start && klen == (cur-start) && strncmp(key,start,klen)==0) ? 0 : 1;}
 
 // this makes a single pass across the json bytes, using each byte as an index into a jump table to build an index and transition state
-char *js0n(char *key, int *len, char *json, int jlen)
+char *js0n(char *key, int klen, char *json, int jlen, int *vlen)
 {
 	char *val = 0;
 	char *cur, *end, *start;
-	int klen = 0;
 	int index = 1;
-	int depth=0;
-	int utf8_remain=0;
+	int depth = 0;
+	int utf8_remain = 0;
 	static void *gostruct[] = 
 	{
 		[0 ... 255] = &&l_bad,
@@ -72,17 +71,18 @@ char *js0n(char *key, int *len, char *json, int jlen)
 	};
 	void **go = gostruct;
 	
-	if(!json || jlen <= 0 || !len) return 0;
+	if(!json || jlen <= 0 || !vlen) return 0;
 	
-	// no key is array mode, len provides requested index
+	// no key is array mode, klen provides requested index
 	if(!key)
 	{
-		index = *len;
+		if(klen < 0) return 0;
+		index = klen;
+		klen = 0;
 	}else{
-		klen = *len;
 		if(klen <= 0) klen = strlen(key); // convenience
 	}
-	*len = 0;
+	*vlen = 0;
 
 	for(start=cur=json,end=cur+jlen; cur<end; cur++)
 	{

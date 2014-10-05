@@ -19,10 +19,11 @@ int main(int argc, char **argv)
 	}
 	fclose(f);
 	
-	len = 0;
-	ret = js0n("test",&len,json,jlen);
-	printf("got %s %d\n",ret,len);
+	ret = js0n("test",0,json,jlen,&len);
+//	printf("got %s %d\n",ret,len);
 	fail_unless(strncmp("value",ret,len) == 0);
+
+
 //  printf("j0g_val 'key' val offset %d\n", j0g_val("key",(char*)json,res));
 //  printf("j0g_str 'key' val '%s'\n", j0g_str("key",(char*)json,res));
 //  printf("j0g_str 'num' val '%0.2f'\n", (j0g_str("num",(char*)json,res)!=NULL)?strtof(j0g_str("num",(char*)json,res), NULL):0);
