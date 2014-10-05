@@ -12,11 +12,23 @@ A one-pass minimal overhead walk of the raw bytes, using each one as an index in
 Parsing this:
 
 ````json
-{"foo":"bar","barbar":[1,2,3],"obj":{"a":"b"}}
+{
+    "barbar": [
+        1,
+        2,
+        3
+    ],
+    "foo": "bar",
+    "obj": {
+        "a": "b"
+    }
+}
+
 ````
 
-Using `at = js0n("barbar", &len, json, strlen(json))` would return an at pointing to `[1,2,3]` and set len to `7`.
+Using `val = js0n("barbar", 6, json, strlen(json), &vlen)` would return a val pointing to `[1,2,3]` and set vlen to `7`.
 
+For more usage examples see the [test.json](test/test.json) and [test.c](test/test.c).
 
 ## History
 

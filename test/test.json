@@ -1,10 +1,12 @@
 {
 	"test":"value",
 	"foo":"b\"a and \\ r",
-	"bar":[1,2,3],
+	"array":[1,2,"three",4],
 	"baz":{"a":"b"},
 	"num":123.45,
-  "utf8":"$¢€𤪤",
+	"bool":true,
+	"utf8":"$¢€𤪤",
+	bare:"yep",
 	"key":"value\n\"newline\"",
 	"obj":{"true":true}
 }
