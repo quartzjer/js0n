@@ -1,9 +1,11 @@
 
 all: test example
 
-test: test/test.c src/js0n.c
+test.c: test/test.c src/js0n.c
 	gcc -Wall -o test/test test/test.c src/js0n.c
-	if ./test/test ; then \
+
+test: test.c
+	@if ./test/test ; then \
 		rm -f ./test/test; \
 		echo "PASSED"; \
 	else \
