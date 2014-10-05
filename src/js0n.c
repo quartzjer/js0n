@@ -1,4 +1,4 @@
-// by jeremie miller - 2010
+// by jeremie miller - 2014
 // public domain, contributions/improvements welcome via github at https://github.com/quartzjer/js0n
 
 // gcc started warning for the init syntax used here, is not helpful so don't generate the spam, supressing the warning is really inconsistently supported across versions
@@ -10,15 +10,16 @@
 #pragma GCC diagnostic ignored "-Winitializer-overrides"
 #pragma GCC diagnostic ignored "-Woverride-init"
 
-// opportunity to further optimize would be having different jump tables for higher depths
-#define PUSH(i) if(depth == 1) prev = *out++ = ((cur+i) - js)
-#define CAP(i) if(depth == 1) prev = *out++ = ((cur+i) - (js + prev) + 1)
+// opportunity to further optimize would be having different short-cut jump tables for higher depths
+#define PUSH(i) if(depth == 1) prev = ((cur+i) - start)
+#define CAP(i) if(depth == 1) prev = ((cur+i) - (start + prev) + 1)
 
 // this makes a single pass across the json bytes, using each byte as an index into a jump table to build an index and transition state
-int js0n(const unsigned char *js, unsigned int len, unsigned short *out, unsigned int olen)
+char *js0n(char *key, char *json, unsigned int len, unsigned int *vlen)
 {
-	unsigned short prev = 0, *oend;
-	const unsigned char *cur, *end;
+	char *val = 0;
+	unsigned short prev = 0;
+	const unsigned char *cur, *end, *start;
 	int depth=0;
 	int utf8_remain=0;
 	static void *gostruct[] = 
@@ -65,17 +66,18 @@ int js0n(const unsigned char *js, unsigned int len, unsigned short *out, unsigne
 	};
 	void **go = gostruct;
 	
-	for(cur=js,end=js+len,oend=out+olen; cur<end && out<oend; cur++)
+	if(!key || !json || !len) return 0;
+
+	for(start=cur=(unsigned char*)json,end=cur+len; cur<end; cur++)
 	{
 			goto *go[*cur];
 			l_loop:;
 	}
 	
-  if(out < oend) *out = 0;
-	return depth; // 0 if successful full parse, >0 for incomplete data
+	return val;
 	
 	l_bad:
-		return 1;
+		return 0;
 	
 	l_up:
 		PUSH(0);

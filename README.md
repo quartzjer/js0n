@@ -15,7 +15,7 @@ Parsing this:
 {"foo":"bar","barbar":[1,2,3],"obj":{"a":"b"}}
 ````
 
-Using `at = js0n(json, len, "barbar", &len)` would return an at of `22` and set len to `7`.
+Using `at = js0n("barbr", json, len, &vlen)` would return an at pointing to `[1,2,3]` and set vlen to `7`.
 
 
 ## History

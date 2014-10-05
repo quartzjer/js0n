@@ -3,25 +3,15 @@
 #include <string.h>
 #include "../src/js0n.h"
 
-void
-ex1()
+void ex1(void)
 {
-	char *s = "{\"foo\":\"bar\",\"barbar\":[1,2,3],\"obj\":{\"a\":\"b\"}}";
+	char *json = "{\"foo\":\"bar\",\"barbar\":[1,2,3],\"obj\":{\"a\":\"b\"}}";
 
-	// 3 keys, 3 values, each with a start and offset --> 12
-	// Plus one for a terminating zero = 13.
-	unsigned short kvpairs[13];
+	printf("parsing '%s'\n", json);
 
-	printf("Parsing '%s'\n", s);
+	char *val = js0n("barbar", json, strlen(json), 0);
 
-	int rc = js0n((unsigned char*) s, strlen(s), kvpairs, 13);
-
-	printf("returned %d\n",rc);
-
-	for (int i = 0; kvpairs[i]; i += 2)
-
-		printf("%d: at %d len %d is %.*s\n", i, 
-			kvpairs[i], kvpairs[i + 1], kvpairs[i + 1], s + kvpairs[i]);
+	printf("returned %s\n",val);
 
 }
 
