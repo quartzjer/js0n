@@ -11,15 +11,15 @@
 #pragma GCC diagnostic ignored "-Woverride-init"
 
 // opportunity to further optimize would be having different short-cut jump tables for higher depths
-#define PUSH(i) if(depth == 1) prev = ((cur+i) - start)
-#define CAP(i) if(depth == 1) prev = ((cur+i) - (start + prev) + 1)
+#define PUSH(i) if(depth == 1) {printf("push %d %s\n",index,cur); if(!key && !index) val = cur; else index--;}
+#define CAP(i) if(depth == 1) {printf("cap %d %s\n",index,cur); if(!key && val && !index) {*arg = (cur - val)+1; return val;}}
 
 // this makes a single pass across the json bytes, using each byte as an index into a jump table to build an index and transition state
-char *js0n(char *key, char *json, unsigned int len, unsigned int *vlen)
+char *js0n(char *key, char *json, unsigned int len, unsigned int *arg)
 {
 	char *val = 0;
-	unsigned short prev = 0;
-	const unsigned char *cur, *end, *start;
+	char *cur, *end, *start;
+	unsigned int index=0; // for parsing arrays
 	int depth=0;
 	int utf8_remain=0;
 	static void *gostruct[] = 
@@ -31,7 +31,8 @@ char *js0n(char *key, char *json, unsigned int len, unsigned int *vlen)
 		['['] = &&l_up, [']'] = &&l_down, // tracking [] and {} individually would allow fuller validation but is really messy
 		['{'] = &&l_up, ['}'] = &&l_down,
 		['-'] = &&l_bare, [48 ... 57] = &&l_bare, // 0-9
-		['t'] = &&l_bare, ['f'] = &&l_bare, ['n'] = &&l_bare // true, false, null
+		[65 ... 90] = &&l_bare, // A-Z
+		[97 ... 122] = &&l_bare // a-z
 	};
 	static void *gobare[] = 
 	{
@@ -66,14 +67,23 @@ char *js0n(char *key, char *json, unsigned int len, unsigned int *vlen)
 	};
 	void **go = gostruct;
 	
-	if(!key || !json || !len) return 0;
-
-	for(start=cur=(unsigned char*)json,end=cur+len; cur<end; cur++)
+	if(!json || !len) return 0;
+	
+	// no key is array mode, vlen provides requested index
+	if(!key)
 	{
-			goto *go[*cur];
+		if(!arg) return 0;
+		index = *arg;
+	}
+
+	for(start=cur=json,end=cur+len; cur<end; cur++)
+	{
+			goto *go[(unsigned char)*cur];
 			l_loop:;
 	}
 	
+printf("return %d %s\n",cur-val,val);
+	if(arg && val) *arg = cur - val; // return length if requested
 	return val;
 	
 	l_bad:
@@ -115,7 +125,7 @@ char *js0n(char *key, char *json, unsigned int len, unsigned int *vlen)
 	l_unbare:
 		CAP(-1);
 		go = gostruct;
-		goto *go[*cur];
+		goto *go[(unsigned char)*cur];
 
 	l_utf8_2:
 		go = goutf8_continue;

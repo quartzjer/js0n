@@ -13,6 +13,15 @@ void ex1(void)
 
 	printf("returned %s\n",val);
 
+	char *array = "[\"foo\",\"bar\",[1,2,3],{\"a\":\"b\"},42]";
+
+	printf("parsing '%s'\n", array);
+
+	unsigned int arg = 3;
+	char *val2 = js0n(0, array, strlen(array), &arg);
+
+	printf("returned %.*s\n",arg,val2);
+
 }
 
 int main(int argc, char **argv)
