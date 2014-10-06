@@ -1,4 +1,4 @@
-# js0n - Complete Zero-Footprint JSON Parser in C
+# js0n - Flexible Zero-Footprint JSON Parser in C
 
 A one-pass minimal overhead walk of the raw bytes, using each one as an index into a jump table to determine state transitions.
 
@@ -32,4 +32,4 @@ For more usage examples see the [test.json](test/test.json) and [test.c](test/te
 
 ## History
 
-See [v1.0] for the original `js0n` function that returned an index of offsets for all key/values in one pass.
+See [v1.0](https://github.com/quartzjer/js0n/tree/v1.0) for the original `js0n` function that returned an index of offsets for all key/values in one pass.
