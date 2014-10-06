@@ -55,13 +55,13 @@ int main(int argc, char **argv)
 
 	// test parse errors
 
-	fail_unless(js0n(0,0,"{}",2,&len) == 0);
+	fail_unless(js0n("x",0,"{}",2,&len) == 0);
 	fail_unless(len == 0);
 
-	fail_unless(js0n(0,0,"{",1,&len) == 0);
+	fail_unless(js0n("x",0,"{",1,&len) == 0);
 	fail_unless(len == 1);
 
-	fail_unless(js0n(0,0,"{\0}",3,&len) == 0);
+	fail_unless(js0n("x",0,"{\0}",3,&len) == 0);
 	fail_unless(len == 1);
 
 	return 0;
