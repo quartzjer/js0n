@@ -72,6 +72,7 @@ char *js0n(char *key, int klen, char *json, int jlen, int *vlen)
 	void **go = gostruct;
 	
 	if(!json || jlen <= 0 || !vlen) return 0;
+	*vlen = 0;
 	
 	// no key is array mode, klen provides requested index
 	if(!key)
@@ -82,7 +83,6 @@ char *js0n(char *key, int klen, char *json, int jlen, int *vlen)
 	}else{
 		if(klen <= 0) klen = strlen(key); // convenience
 	}
-	*vlen = 0;
 
 	for(start=cur=json,end=cur+jlen; cur<end; cur++)
 	{
@@ -90,9 +90,11 @@ char *js0n(char *key, int klen, char *json, int jlen, int *vlen)
 			l_loop:;
 	}
 	
+	if(depth) *vlen = jlen; // incomplete
 	return 0;
 	
 	l_bad:
+		*vlen = cur - json; // where error'd
 		return 0;
 	
 	l_up:

@@ -53,6 +53,17 @@ int main(int argc, char **argv)
 	ret = js0n("obj",0,json,jlen,&len);
 	fail_unless(strncmp("{\"true\":true}",ret,len) == 0);
 
+	// test parse errors
+
+	fail_unless(js0n(0,0,"{}",2,&len) == 0);
+	fail_unless(len == 0);
+
+	fail_unless(js0n(0,0,"{",1,&len) == 0);
+	fail_unless(len == 1);
+
+	fail_unless(js0n(0,0,"{\0}",3,&len) == 0);
+	fail_unless(len == 1);
+
 	return 0;
 }
 
