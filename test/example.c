@@ -22,5 +22,6 @@ void ex1(void)
 int main(int argc, char **argv)
 {
 	ex1();
+	return 0;
 }
 
