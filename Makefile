@@ -1,18 +1,22 @@
-MANDIR=/usr/share/man/man3
 
-all: js0n_test example
+all: test example
 
-js0n_test: test/js0n_test.c js0n.c j0g.c
-	gcc -Wall -o js0n_test test/js0n_test.c js0n.c j0g.c
+test.c: test/test.c src/js0n.c
+	gcc -Wall -o test/test test/test.c src/js0n.c
 
-example: test/example.c js0n.c j0g.c
-	gcc -Wall -o example test/example.c js0n.c j0g.c
+test: test.c
+	@if ./test/test ; then \
+		rm -f ./test/test; \
+		echo "TESTS PASSED"; \
+	else \
+		rm -f ./test/test; \
+		echo "TESTS FAILED"; exit 1; \
+	fi; \
+
+example: test/example.c src/js0n.c
+	gcc -Wall -o example test/example.c src/js0n.c
 
 clean:
-	rm -f example js0n_test
+	rm -f example test/test
 
-
-man: ${MANDIR}/js0n.3 ${MANDIR}/j0g.3
-
-${MANDIR}/%.3: %.3
-	sudo cp $? $@
+.PHONY: all test clean
