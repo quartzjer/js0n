@@ -8,5 +8,7 @@
 	"utf8":"$¢€𤪤",
 	bare:"yep",
 	"key":"value\n\"newline\"",
-	"obj":{"true":true}
+	"obj":{"true":true},
+  "name":"value",
+  "value":"real"
 }
