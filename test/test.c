@@ -7,7 +7,7 @@
 int main(int argc, char **argv)
 {
 	char buff[1024], *json = NULL, *ret;
-	int len, len2, jlen=0;
+	size_t len, len2, jlen=0;
 	FILE *f;
 	
 	fail_unless((f = fopen("./test/test.json","r")) != NULL);
