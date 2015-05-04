@@ -19,41 +19,52 @@ int main(int argc, char **argv)
 	}
 	fclose(f);
 	
-	ret = js0n("test",0,json,jlen,&len);
-//	printf("got %s %d\n",ret,len);
+	fail_unless((ret = js0n("test",0,json,jlen,&len)));
+	fail_unless(len);
 	fail_unless(strncmp("value",ret,len) == 0);
 
-	ret = js0n("foo",0,json,jlen,&len);
+	fail_unless((ret = js0n("foo",0,json,jlen,&len)));
+	fail_unless(len);
 	fail_unless(strncmp("b\\\"a and \\\\ r",ret,len) == 0);
 
-	ret = js0n("array",0,json,jlen,&len);
+	fail_unless((ret = js0n("array",0,json,jlen,&len)));
+	fail_unless(len);
 	fail_unless(strncmp("[1,2,\"three\",4]",ret,len) == 0);
 
-	ret = js0n(0,2,ret,len,&len2);
+	fail_unless((ret = js0n(0,2,ret,len,&len2)));
+	fail_unless(len);
 	fail_unless(strncmp("three",ret,len2) == 0);
 
-	ret = js0n("baz",0,json,jlen,&len);
+	fail_unless((ret = js0n("baz",0,json,jlen,&len)));
+	fail_unless(len);
 	fail_unless(strncmp("{\"a\":\"b\"}",ret,len) == 0);
 
-	ret = js0n("num",0,json,jlen,&len);
+	fail_unless((ret = js0n("num",0,json,jlen,&len)));
+	fail_unless(len);
 	fail_unless(strncmp("123.45",ret,len) == 0);
 
-	ret = js0n("bool",0,json,jlen,&len);
+	fail_unless((ret = js0n("bool",0,json,jlen,&len)));
+	fail_unless(len);
 	fail_unless(strncmp("true",ret,len) == 0);
 
-	ret = js0n("bare",0,json,jlen,&len);
+	fail_unless((ret = js0n("bare",0,json,jlen,&len)));
+	fail_unless(len);
 	fail_unless(strncmp("yep",ret,len) == 0);
 
-	ret = js0n("utf8",0,json,jlen,&len);
+	fail_unless((ret = js0n("utf8",0,json,jlen,&len)));
+	fail_unless(len);
 	fail_unless(strncmp("$¢€𤪤",ret,len) == 0);
 
-	ret = js0n("key",0,json,jlen,&len);
+	fail_unless((ret = js0n("key",0,json,jlen,&len)));
+	fail_unless(len);
 	fail_unless(strncmp("value\\n\\\"newline\\\"",ret,len) == 0);
 
-	ret = js0n("obj",0,json,jlen,&len);
+	fail_unless((ret = js0n("obj",0,json,jlen,&len)));
+	fail_unless(len);
 	fail_unless(strncmp("{\"true\":true}",ret,len) == 0);
 
-	ret = js0n("value",0,json,jlen,&len);
+	fail_unless((ret = js0n("value",0,json,jlen,&len)));
+	fail_unless(len);
 	fail_unless(strncmp("real",ret,len) == 0);
 
 	// test parse errors
