@@ -16,7 +16,7 @@
 #define PUSH(i) if(depth == 1) { if(!index) { val = cur+i; }else{ if(klen && index == 1) start = cur+i; else index--; } }
 
 // determine if key matches or value is complete
-#define CAP(i) if(depth == 1) { if(val && !index) {*vlen = (cur+i+1) - val; return val;}; if(klen) index = (start && klen == (cur-start) && strncmp(key,start,klen)==0) ? 0 : 1;}
+#define CAP(i) if(depth == 1) { if(val && !index) {*vlen = (cur+i+1) - val; return val;}; if(klen) index = (start && klen == (cur-start) && strncmp(key,start,klen)==0) ? 1 : 2;}
 
 // this makes a single pass across the json bytes, using each byte as an index into a jump table to build an index and transition state
 char *js0n(char *key, int klen, char *json, int jlen, int *vlen)
