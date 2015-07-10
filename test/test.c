@@ -6,7 +6,8 @@
 
 int main(int argc, char **argv)
 {
-	char buff[1024], *json = NULL, *ret;
+	char buff[1024], *json = NULL;
+	const char *ret;
 	size_t len, len2, jlen=0;
 	FILE *f;
 	
