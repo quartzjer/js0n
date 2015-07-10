@@ -19,10 +19,11 @@
 #define CAP(i) if(depth == 1) { if(val && !index) {*vlen = (size_t)((cur+i+1) - val); return val;}; if(klen && start) {index = (klen == (size_t)(cur-start) && strncmp(key,start,klen)==0) ? 0 : 2; start = 0;} }
 
 // this makes a single pass across the json bytes, using each byte as an index into a jump table to build an index and transition state
-char *js0n(char *key, size_t klen, char *json, size_t jlen, size_t *vlen)
+const char *js0n(const char *key, size_t klen,
+				 const char *json, size_t jlen, size_t *vlen)
 {
-	char *val = 0;
-	char *cur, *end, *start;
+	const char *val = 0;
+	const char *cur, *end, *start;
 	size_t index = 1;
 	int depth = 0;
 	int utf8_remain = 0;
