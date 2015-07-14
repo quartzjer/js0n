@@ -5,6 +5,7 @@
 // vlen = where to store return value length
 // returns pointer to value and sets len to value length, or 0 if not found
 // any parse error will set vlen to the position of the error
+#include <stddef.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
