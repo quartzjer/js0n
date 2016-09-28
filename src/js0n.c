@@ -1,5 +1,5 @@
 // by jeremie miller - 2014
-// public domain, contributions/improvements welcome via github at https://github.com/quartzjer/js0n
+// public domain or MIT license, contributions/improvements welcome via github at https://github.com/quartzjer/js0n
 
 #include <string.h> // one strncmp() is used to do key comparison, and a strlen(key) if no len passed in
 

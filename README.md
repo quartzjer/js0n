@@ -2,7 +2,7 @@
 
 A one-pass minimal overhead walk of the raw bytes, using each one as an index into a jump table to determine state transitions.
 
-* public domain, single js0n.c file with one function
+* public domain or MIT license, single js0n.c file with one function
 * easy to use, just returns a given key-value pair location in the JSON string
 * no dependencies, embedded friendly
 * requires no memory/malloc or copying, uses only what is passed in (up to `int` max length)
