@@ -10,7 +10,10 @@ int main(int argc, char **argv)
 	const char *ret;
 	size_t len, len2, jlen=0;
 	FILE *f;
-	
+
+	(void) argc;
+	(void) argv;
+
 	fail_unless((f = fopen("./test/test.json","r")) != NULL);
 	while((len = fread(buff,1,1024,f)) > 0)
 	{
@@ -19,13 +22,13 @@ int main(int argc, char **argv)
 		jlen+=len;
 	}
 	fclose(f);
-	
+
 	fail_unless((ret = js0n("test",0,json,jlen,&len)));
 	fail_unless(len);
 	fail_unless(strncmp("value",ret,len) == 0);
 
 	fail_unless((ret = js0n("foo",0,json,jlen,&len)));
-	fail_unless(len);
+	fail_unless(len == 13);
 	fail_unless(strncmp("b\\\"a and \\\\ r",ret,len) == 0);
 
 	fail_unless((ret = js0n("array",0,json,jlen,&len)));
