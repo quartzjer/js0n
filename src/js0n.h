@@ -5,6 +5,10 @@
 // vlen = where to store return value length
 // returns pointer to value and sets len to value length, or 0 if not found
 // any parse error will set vlen to the position of the error
+
+#ifndef JS0N_H
+#define JS0N_H
+
 #include <stddef.h>
 #ifdef __cplusplus
 extern "C" {
@@ -14,3 +18,5 @@ const char *js0n(const char *key, size_t klen,
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
+
+#endif /* JS0N_H */
