@@ -2,7 +2,7 @@
 all: test example
 
 test.c: test/test.c src/js0n.c
-	gcc -Wall -Wextra -Wno-unused-parameter -o test/test test/test.c src/js0n.c
+	gcc -std=c99 -Wall -Wextra -Werror -o test/test test/test.c src/js0n.c
 
 test: test.c
 	@if ./test/test ; then \
