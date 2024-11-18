@@ -2,7 +2,7 @@
 // klen = key length (or 0), or if null key then len is the array offset value
 // json = json object or array
 // jlen = length of json
-// vlen = where to store return value length
+// vlen = where to store the return value length
 // returns pointer to value and sets len to value length, or 0 if not found
 // any parse error will set vlen to the position of the error
 #include <stddef.h>
